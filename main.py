@@ -12,5 +12,4 @@ ax.set(xlabel='time (s)', ylabel='voltage (mV)',
        title='This is a beautiful sine wave')
 ax.grid()
 
-fig.savefig("test.png")
 plt.show()
