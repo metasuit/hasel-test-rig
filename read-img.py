@@ -1,4 +1,6 @@
 import cv2
+import numpy as np
+import matplotlib.pyplot as plt
 
 cap = cv2.VideoCapture(2) # Clemens MacBook Pro 16
 # cap = cv2.VideoCapture(?) # Beast Alpha

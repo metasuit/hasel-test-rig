@@ -1,15 +1,13 @@
+import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 
-# Data for plotting
-t = np.arange(0.0, 2.0, 0.01)
-s = 1 + np.sin(2 * np.pi * t)
+fileName = "img/img-1.png"
+im1 = cv2.imread(fileName, cv2.IMREAD_COLOR)
+im2 = cv2.imread(fileName, cv2.IMREAD_GRAYSCALE)
 
-fig, ax = plt.subplots()
-ax.plot(t, s)
 
-ax.set(xlabel='time (s)', ylabel='voltage (mV)',
-       title='This is a beautiful sine wave')
-ax.grid()
-
-plt.show()
+plt.figure(figsize=[20,10])
+plt.subplot (121); plt.axis('off'); plt.imshow(im1); plt.title("COLOR")
+plt.subplot (122); plt.axis('off'); plt.imshow(im2); plt.title( "BLACKWHITE")
+plt.show
