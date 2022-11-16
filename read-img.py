@@ -5,7 +5,6 @@ import matplotlib.pyplot as plt
 cap = cv2.VideoCapture(0) # Clemens MacBook Pro 16
 # cap = cv2.VideoCapture(?) # Beast Alpha
 
-
 # Check if the webcam is opened correctly
 while not cap.isOpened():
     print("Camera not found")
