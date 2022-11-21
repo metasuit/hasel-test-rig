@@ -14,6 +14,7 @@ imgFileName = 'img/printedprealign1.png'
 refFileName = 'img/calib1letters.png'
 
 def alignImages(im1, im2):
+    
     # Convert images to grayscale
     im1Gray = cv2.cvtColor(im1, cv2.COLOR_BGR2GRAY)
     im2Gray = cv2.cvtColor(im2, cv2.COLOR_BGR2GRAY)
