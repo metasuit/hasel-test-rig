@@ -33,7 +33,7 @@ class displacementMeasurement(tk.Frame):
         # Defining the Coordinate Vectors for later analysis
         self.X, self.Y, self.X_avg, self.Y_avg, self.T = [],[],[],[],[]
         self.time = 0
-        self.cap = cv2.VideoCapture(3)
+        self.cap = cv2.VideoCapture(0)
         time.sleep(0.5)
 
     def create_widgets(self):
@@ -54,7 +54,7 @@ class displacementMeasurement(tk.Frame):
 
         #Shared flag to alert task if it should stop
         self.continueRunning = True
-        self.cap = cv2.VideoCapture(3)
+        self.cap = cv2.VideoCapture(0)
         self.X, self.Y, self.X_avg, self.Y_avg, self.T = [],[],[],[],[]
         self.time = 0
         
