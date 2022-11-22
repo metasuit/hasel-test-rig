@@ -9,11 +9,60 @@ import cv2
 import numpy as np
 
 
+def alignImages(im1, im2):
+    MAX_FEATURES = 500
+    GOOD_MATCH_PERCENT = 0.50
+
+    # Convert images to grayscale
+    im1Gray = cv2.cvtColor(im1, cv2.COLOR_BGR2GRAY)
+    im2Gray = cv2.cvtColor(im2, cv2.COLOR_BGR2GRAY)
+
+    # Detect ORB features and compute descriptors.
+    orb = cv2.ORB_create(MAX_FEATURES)
+    keypoints1, descriptors1 = orb.detectAndCompute(im1Gray, None)
+    keypoints2, descriptors2 = orb.detectAndCompute(im2Gray, None)
+
+    # Match features.
+    matcher = cv2.DescriptorMatcher_create(cv2.DESCRIPTOR_MATCHER_BRUTEFORCE_HAMMING)
+    matches = matcher.match(descriptors1, descriptors2, None)
+
+    # Sort matches by score
+    list(matches).sort(key=lambda x: x.distance, reverse=False)
+
+    # Remove not so good matches
+    numGoodMatches = int(len(matches) * GOOD_MATCH_PERCENT)
+    matches = matches[:numGoodMatches]
+
+    # Draw top matches
+    imMatches = cv2.drawMatches(im1, keypoints1, im2, keypoints2, matches, None)
+    # cv2.imshow('matches',imMatches)
+    # cv2.waitKey()
+
+    # Extract location of good matches
+    points1 = np.zeros((len(matches), 2), dtype=np.float32)
+    points2 = np.zeros((len(matches), 2), dtype=np.float32)
+
+    for i, match in enumerate(matches):
+        points1[i, :] = keypoints1[match.queryIdx].pt
+        points2[i, :] = keypoints2[match.trainIdx].pt
+
+    # Find homography
+    h, mask = cv2.findHomography(points1, points2, cv2.RANSAC)
+
+    # Use homography
+    height, width, channels = im2.shape
+    im1Reg = cv2.warpPerspective(im1, h, (width, height))
+
+    return im1Reg, h
+
 
 class displacementMeasurement(tk.Frame):
 
     def __init__(self, master):
         tk.Frame.__init__(self, master)
+
+        #Defining camera parameters:
+        self.GoPro = 3
 
         #Configure root tk class
         self.master = master
@@ -33,7 +82,7 @@ class displacementMeasurement(tk.Frame):
         # Defining the Coordinate Vectors for later analysis
         self.X, self.Y, self.X_avg, self.Y_avg, self.T = [],[],[],[],[]
         self.time = 0
-        self.cap = cv2.VideoCapture(3)
+        self.cap = cv2.VideoCapture(self.GoPro)
         time.sleep(0.5)
 
     def create_widgets(self):
@@ -54,9 +103,10 @@ class displacementMeasurement(tk.Frame):
 
         #Shared flag to alert task if it should stop
         self.continueRunning = True
-        self.cap = cv2.VideoCapture(3)
+        self.cap = cv2.VideoCapture(self.GoPro)
         self.X, self.Y, self.X_avg, self.Y_avg, self.T = [],[],[],[],[]
         self.time = 0
+        _, self.frame_ref = self.cap.read()
         
         #spin off call to check 
         self.master.after(500, self.runTask)
@@ -64,9 +114,11 @@ class displacementMeasurement(tk.Frame):
     def runTask(self):
         
         _, self.frame = self.cap.read()
+        
+        
 
         # Ilyas Implementation:
-        # frame = align_image(frame)
+        self.frame, _ = alignImages(self.frame, self.frame_ref)
 
         self.blurred_frame = cv2.GaussianBlur(self.frame, (5, 5), 0)
         self.hsv = cv2.cvtColor(self.blurred_frame, cv2.COLOR_BGR2HSV)
@@ -98,11 +150,11 @@ class displacementMeasurement(tk.Frame):
             self.T.append(self.time)
             self.time += 1
 
-        #cv2.imshow('HASEL', self.frame)
-        self.graphDataFrame.ax.cla()
-        self.graphDataFrame.ax.set_title("Acquired Data")
-        self.graphDataFrame.ax.plot(self.Y_avg)
-        self.graphDataFrame.graph.draw()
+        cv2.imshow('HASEL', self.frame)
+        # self.graphDataFrame.ax.cla()
+        # self.graphDataFrame.ax.set_title("Acquired Data")
+        # self.graphDataFrame.ax.plot(self.Y_avg)
+        # self.graphDataFrame.graph.draw()
         
         if self.continueRunning:
             self.master.after(10, self.runTask)
