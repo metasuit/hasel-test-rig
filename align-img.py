@@ -10,8 +10,8 @@ MAX_FEATURES = 500
 GOOD_MATCH_PERCENT = 0.15
 
 #Define filenames
-imgFileName = 'img/printedprealign1.png'
-refFileName = 'img/calib1letters.png'
+imgFileName = 'img/align-test-1.png'
+refFileName = 'img/reference.png'
 
 def alignImages(im1, im2):
     

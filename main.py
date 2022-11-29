@@ -3,9 +3,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import time
 from object_size import pixel_to_millimeters
+from object_size import *
 
-cap = cv2.VideoCapture(0)
-#time.sleep(0.5)
+cap = cv2.VideoCapture(3)
+time.sleep(0.5)
 
 # Defining Color intervals to recognize
 ORANGE_MIN = np.array([5, 50, 50],np.uint8)
@@ -15,6 +16,9 @@ BLACK_MIN = np.array([36, 50, 50],np.uint8)
 BLACK_MAX = np.array([86, 255, 255],np.uint8)
 #BLACK_MAX = np.array([110,50,50],np.uint8)
 #BLACK_MIN = np.array([130,255,255],np.uint8)
+
+GREEN_MIN = np.array([40, 40,40],np.uint8)
+GREEN_MAX = np.array([70, 255,255],np.uint8)
 
 # Defining the Coordinate Vectors for later analysis
 X = []
@@ -28,7 +32,7 @@ while True:
     _, frame = cap.read()
     blurred_frame = cv2.GaussianBlur(frame, (5, 5), 0)
     hsv = cv2.cvtColor(blurred_frame, cv2.COLOR_BGR2HSV)
-    mask = cv2.inRange(hsv, ORANGE_MIN, ORANGE_MAX)
+    mask = cv2.inRange(hsv, GREEN_MIN, GREEN_MAX)
     mask2 = cv2.inRange(hsv, BLACK_MIN, BLACK_MAX)
     
     #test zone
@@ -77,8 +81,8 @@ while True:
         if cv2.contourArea(c) < 300:
             continue
         #print("test before function call")
-        frame, pixelsPerMetric = pixel_to_millimeters(frame,c, 10, pixelsPerMetric)
-        print(pixelsPerMetric)
+        #frame, pixelsPerMetric = pixel_to_millimeters(frame,c, 10, pixelsPerMetric)
+        #print(pixelsPerMetric)
     
 
     #for contour in contours_canny:

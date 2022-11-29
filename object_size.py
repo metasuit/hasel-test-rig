@@ -13,7 +13,7 @@ def midpoint(ptA, ptB):
 	return ((ptA[0] + ptB[0]) * 0.5, (ptA[1] + ptB[1]) * 0.5)
 
 
-def pixel_to_millimeters(frame, c, ref_height, pixelsPerMetric): #reference height in millimeters
+def pixel_to_millimeters(c, ref_height, ref_width): #reference height in millimeters
     #create box
     box = cv2.minAreaRect(c)
     box = cv2.cv.BoxPoints(box) if imutils.is_cv2() else cv2.boxPoints(box)
@@ -24,10 +24,10 @@ def pixel_to_millimeters(frame, c, ref_height, pixelsPerMetric): #reference heig
     # order, then draw the outline of the rotated bounding
     # box
     box = perspective.order_points(box)
-    cv2.drawContours(frame, [box.astype("int")], -1, (0, 255, 0), 2)
+    #cv2.drawContours(frame, [box.astype("int")], -1, (0, 255, 0), 2)
     # loop over the original points and draw them (points as small circles)
-    for (x, y) in box:
-        cv2.circle(frame, (int(x), int(y)), 5, (0, 0, 255), -1)
+    #for (x, y) in box:
+     #   cv2.circle(frame, (int(x), int(y)), 5, (0, 0, 255), -1)
 
     # unpack the ordered bounding box, then compute the midpoint
     # between the top-left and top-right coordinates, followed by
@@ -40,15 +40,15 @@ def pixel_to_millimeters(frame, c, ref_height, pixelsPerMetric): #reference heig
     (tlblX, tlblY) = midpoint(tl, bl) #right midpoint
     (trbrX, trbrY) = midpoint(tr, br) #left midpoint
     # draw the midpoints on the image
-    cv2.circle(frame, (int(tltrX), int(tltrY)), 5, (255, 0, 0), -1)
-    cv2.circle(frame, (int(blbrX), int(blbrY)), 5, (255, 0, 0), -1)
-    cv2.circle(frame, (int(tlblX), int(tlblY)), 5, (255, 0, 0), -1)
-    cv2.circle(frame, (int(trbrX), int(trbrY)), 5, (255, 0, 0), -1)
+    #cv2.circle(frame, (int(tltrX), int(tltrY)), 5, (255, 0, 0), -1)
+    #cv2.circle(frame, (int(blbrX), int(blbrY)), 5, (255, 0, 0), -1)
+    #cv2.circle(frame, (int(tlblX), int(tlblY)), 5, (255, 0, 0), -1)
+    #cv2.circle(frame, (int(trbrX), int(trbrY)), 5, (255, 0, 0), -1)
     # draw lines between the midpoints
-    cv2.line(frame, (int(tltrX), int(tltrY)), (int(blbrX), int(blbrY)), #top to bottom
-        (255, 0, 255), 2)
-    cv2.line(frame, (int(tlblX), int(tlblY)), (int(trbrX), int(trbrY)), #left to right
-        (255, 0, 255), 2)
+    #cv2.line(frame, (int(tltrX), int(tltrY)), (int(blbrX), int(blbrY)), #top to bottom
+     #   (255, 0, 255), 2)
+    #cv2.line(frame, (int(tlblX), int(tlblY)), (int(trbrX), int(trbrY)), #left to right
+     #   (255, 0, 255), 2)
 
     # compute the Euclidean distance between the midpoints
     dA = dist.euclidean((tltrX, tltrY), (blbrX, blbrY))
@@ -56,8 +56,8 @@ def pixel_to_millimeters(frame, c, ref_height, pixelsPerMetric): #reference heig
     # if the pixels per metric has not been initialized, then
     # compute it as the ratio of pixels to supplied metric
     # (in this case, inches)
-    if pixelsPerMetric == None:
-        pixelsPerMetric = dA / ref_height
-        #print(pixelsPerMetric)
-
-    return frame, pixelsPerMetric
+    if dA == 0 or dB == 0:
+        return 1
+    pixelsPerMetric = (dA/ref_height + dB/ref_width)/2 
+       
+    return pixelsPerMetric
