@@ -131,7 +131,7 @@ class displacementMeasurement(tk.Frame):
         self.master.after(10, self.runPreview)
 
     def runPreview(self):
-        print("ran")
+        
 
         _, self.frame = self.cap.read()
         
@@ -156,7 +156,7 @@ class displacementMeasurement(tk.Frame):
             self.master.after(10, self.runPreview)
 
     def closePreview(self):
-        print("closed")
+        
         self.continueRunning = False
         cv2.destroyWindow('MASK PREVIEW: PRESS ANY KEY TO EXIT')
         # self.cap.release()
@@ -310,11 +310,10 @@ class displacementMeasurement(tk.Frame):
         #if self.f is None: # asksaveasfile return `None` if dialog closed with "cancel".
             #return
             
-        plt.savefig("HASEL_DATA/" + self.HASELSettingsFrame.HASELNumberEntry.get())
+        plt.savefig("HASEL_DATA/" + self.HASELSettingsFrame.HASELNumberEntry.get()+ "_" + self.inputSettingsFrame.loadEntry.get() + "_" + self.inputSettingsFrame.actuationVoltageEntry.get())
         plt.close()
 
-    def exportTXT(self):
-        with open('HASEL_DATA/' + self.HASELSettingsFrame.HASELNumberEntry.get(), 'w') as self.f:
+        with open('HASEL_DATA/' + self.HASELSettingsFrame.HASELNumberEntry.get() + "_" + self.inputSettingsFrame.loadEntry.get() + "_" + self.inputSettingsFrame.actuationVoltageEntry.get(), 'w') as self.f:
             self.f.write("HASEL Number: " + self.HASELSettingsFrame.HASELNumberEntry.get() + "\n")
             self.f.write("HASEL Type: " + self.HASELSettingsFrame.optionVar.get() + "\n")
             self.f.write("Comments: " + self.HASELSettingsFrame.HASELCommentEntry.get() + "\n")
@@ -326,6 +325,20 @@ class displacementMeasurement(tk.Frame):
                 self.f.write(str(self.Y_avg[i]) + " ")
             self.f.write("\n")
 
+    def exportTXT(self):
+        with open('HASEL_DATA/' + self.HASELSettingsFrame.HASELNumberEntry.get() + "_" + self.inputSettingsFrame.loadEntry.get, 'w') as self.f:
+            self.f.write("HASEL Number: " + self.HASELSettingsFrame.HASELNumberEntry.get() + "\n")
+            self.f.write("HASEL Type: " + self.HASELSettingsFrame.optionVar.get() + "\n")
+            self.f.write("Comments: " + self.HASELSettingsFrame.HASELCommentEntry.get() + "\n")
+            self.f.write("Load [g]: " + self.inputSettingsFrame.loadEntry.get() + "\n")
+            self.f.write("Actuation Voltage [V]: " + self.inputSettingsFrame.actuationVoltageEntry.get() + "\n")
+            self.f.write("Max Displacement: [mm] " + str(self.maxDisplacement) + "\n")
+            self.f.write("\n")
+            for i in range(0, len(self.Y_avg)):
+                self.f.write(str(self.Y_avg[i]) + " ")
+            self.f.write("\n")
+        
+
 
     
 class HASELSettings(tk.LabelFrame):
@@ -333,7 +346,7 @@ class HASELSettings(tk.LabelFrame):
     def __init__(self, parent, title):
         tk.LabelFrame.__init__(self, parent, text=title, labelanchor='n')
         self.parent = parent
-        self.HASELTypes = ["HASEL_Orginial", "HASEL_Small", "Froggy", "Froggy_Half", "Butterfly"]
+        self.HASELTypes = ["HASEL_Orginial", "HASEL_Small", "Froggy", "Froggy_Half", "Butterfly", "Buggy"]
         self.optionVar = tk.StringVar(self)
 
         self.grid_columnconfigure(0, weight=1)
@@ -384,7 +397,7 @@ class calibrationSettings(tk.LabelFrame):
         self.widthLabel.grid(row=0, column= 0, sticky='w', padx=self.xPadding, pady=(10,0))
 
         self.widthEntry = ttk.Entry(self)
-        self.widthEntry.insert(0, "41.4")
+        self.widthEntry.insert(0, "40.7")
         self.widthEntry.grid(row=1, column= 0, sticky="ew", padx=self.xPadding)
 
         self.heightLabel = ttk.Label(self, text="Ref Height [mm]")
@@ -426,11 +439,11 @@ class inputSettings(tk.LabelFrame):
         self.stopButton = ttk.Button(self, text="Stop Task", command=self.parent.stopTask)
         self.stopButton.grid(row=4, column=1, sticky='e', padx=self.xPadding, pady=(10,0))
 
-        self.startButton = ttk.Button(self, text="Export Figure", command=self.parent.exportFigure)
-        self.startButton.grid(row=5, column=0, sticky='w', padx=self.xPadding, pady=(10,0))
+        self.exportButton = ttk.Button(self, text="Export Figure", command=self.parent.exportFigure)
+        self.exportButton.grid(row=5, column=0, sticky='w', padx=self.xPadding, pady=(10,0))
 
-        self.stopButton = ttk.Button(self, text="Export txt File", command=self.parent.exportTXT)
-        self.stopButton.grid(row=5, column=1, sticky='e', padx=self.xPadding, pady=(10,0))
+        #self.stopButton = ttk.Button(self, text="Export txt File", command=self.parent.exportTXT)
+        #self.stopButton.grid(row=5, column=1, sticky='e', padx=self.xPadding, pady=(10,0))
 
 class graphData(tk.Frame):
 
